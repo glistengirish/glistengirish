@@ -32,11 +32,9 @@ phases:
       - echo Pushing the Docker image...
       - docker push 634842168668.dkr.ecr.ap-south-1.amazonaws.com/fmh:latest
       - echo Writing image definitions file...
-      - printf '[{"name":"%s","imageUri":"%s"}]' fmh 634842168668.dkr.ecr.ap-south-1.amazonaws.com/fmh:latest > imagedefinitions.json
-  deploy:
-    commands:
       - echo deployment started on `date`
-      - ecs update
-      - echo Build completed on `date`
+#       - aws ecs update-service --region "ap-south-1" --cluster "ClusterName" --service "ecsServiceName" --force-new-deployment
+      - echo deployment completed on `date`
+      - printf '[{"name":"%s","imageUri":"%s"}]' fmh 634842168668.dkr.ecr.ap-south-1.amazonaws.com/fmh:latest > imagedefinitions.json
 artifacts:
     files: imagedefinitions.json
