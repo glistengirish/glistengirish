@@ -33,5 +33,10 @@ phases:
       - docker push 634842168668.dkr.ecr.ap-south-1.amazonaws.com/fmh:latest
       - echo Writing image definitions file...
       - printf '[{"name":"%s","imageUri":"%s"}]' fmh docker push 634842168668.dkr.ecr.ap-south-1.amazonaws.com/fmh:latest > imagedefinitions.json
+  deploy:
+    commands:
+      - echo deployment started on `date`
+      - ecs update
+      - echo Build completed on `date`
 artifacts:
     files: imagedefinitions.json
