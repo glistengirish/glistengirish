@@ -1,0 +1,37 @@
+version: 0.2
+
+#env:
+  #variables:
+     # key: "value"
+     # key: "value"
+  #parameter-store:
+     # key: "value"
+     # key: "value"
+  #secrets-manager:
+     # key: secret-id:json-key:version-stage:version-id
+     # key: secret-id:json-key:version-stage:version-id
+  #exported-variables:
+     # - variable
+     # - variable
+  #git-credential-helper: yes
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --no-verify --region ap-south-1 | docker login --username AWS --password-stdin 634842168668.dkr.ecr.ap-south-1.amazonaws.com
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Building the Docker image...          
+      - docker build -t fmh .
+      - docker tag fmh:latest 634842168668.dkr.ecr.ap-south-1.amazonaws.com/fmh:latest
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Pushing the Docker image...
+      - docker push 634842168668.dkr.ecr.ap-south-1.amazonaws.com/fmh:latest
+      - echo Writing image definitions file...
+      - printf '[{"name":"%s","imageUri":"%s"}]' fmh docker push 634842168668.dkr.ecr.ap-south-1.amazonaws.com/fmh:latest > imagedefinitions.json
+artifacts:
+    files: imagedefinitions.json
