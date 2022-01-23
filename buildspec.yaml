@@ -38,6 +38,6 @@ phases:
       - echo deployment started on `date`
 #       - aws ecs update-service --region "ap-south-1" --cluster "ClusterName" --service "ecsServiceName" --force-new-deployment
       - echo deployment completed on `date`
-      - - printf '{"ImageURI":"%s"}' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+      - printf '{"ImageURI":"%s"}' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
 artifacts:
     files: imagedefinitions.json
