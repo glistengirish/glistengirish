@@ -13,17 +13,17 @@ version: 0.2
   #exported-variables:
      # - variable
       - AWS_ACCOUNT_ID
-	  - AWS_DEFAULT_REGION
-	  - CODEBUILD_RESOLVED_SOURCE_VERSION
-	  - IMAGE_REPO_NAME
-	  - IMAGE_TAG
+      - AWS_DEFAULT_REGION
+      - CODEBUILD_RESOLVED_SOURCE_VERSION
+      - IMAGE_REPO_NAME
+      - IMAGE_TAG
   #git-credential-helper: yes
 
 phases:
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
-	  - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
 #	    - TAG="$(date +%Y-%m-%d.%H.%M.%S).$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 8)"
   build:
     commands:
@@ -35,7 +35,7 @@ phases:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker image...
-	  - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
       - echo Writing image definitions file...
       - echo deployment started on `date`
 #       - aws ecs update-service --region "ap-south-1" --cluster "ClusterName" --service "ecsServiceName" --force-new-deployment
