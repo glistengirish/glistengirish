@@ -12,18 +12,18 @@ version: 0.2
      # key: secret-id:json-key:version-stage:version-id
   #exported-variables:
      # - variable
-      - AWS_ACCOUNT_ID
-      - AWS_DEFAULT_REGION
-      - CODEBUILD_RESOLVED_SOURCE_VERSION
-      - IMAGE_REPO_NAME
-      - IMAGE_TAG
+     # - variable
   #git-credential-helper: yes
 
 phases:
   pre_build:
     commands:
-      - echo Logging in to Amazon ECR...
-      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+    - echo Logging in to Amazon ECR...
+	  - AWS_DEFAULT_REGION=ap-south-1
+	  - AWS_ACCOUNT_ID=634842168668
+	  - IMAGE_REPO_NAME=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION)
+	  - IMAGE_TAG=fmh_7.2
+    - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
 #	    - TAG="$(date +%Y-%m-%d.%H.%M.%S).$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 8)"
   build:
     commands:
