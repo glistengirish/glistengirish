@@ -19,10 +19,10 @@ phases:
   pre_build:
     commands:
     - echo Logging in to Amazon ECR...
-	  - AWS_DEFAULT_REGION=ap-south-1
-	  - AWS_ACCOUNT_ID=634842168668
-	  - IMAGE_REPO_NAME=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION)
-	  - IMAGE_TAG=fmh_7.2
+    - AWS_DEFAULT_REGION=ap-south-1
+    - AWS_ACCOUNT_ID=634842168668
+    - IMAGE_REPO_NAME=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION)
+    - IMAGE_TAG=fmh_7.2
     - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
 #	    - TAG="$(date +%Y-%m-%d.%H.%M.%S).$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 8)"
   build:
