@@ -1,7 +1,7 @@
 version: 0.2
 
-#env:
-  #variables:
+env:
+  variables:
       AWS_REGION: "ap-south-1"
      # key: "value"
   #parameter-store:
