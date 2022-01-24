@@ -2,7 +2,7 @@ version: 0.2
 
 #env:
   #variables:
-     # key: "value"
+      AWS_REGION: "ap-south-1"
      # key: "value"
   #parameter-store:
      # key: "value"
@@ -19,10 +19,10 @@ phases:
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
-      - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 634842168668.dkr.ecr.ap-south-1.amazonaws.com
+      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin 634842168668.dkr.ecr.$AWS_REGION.amazonaws.com
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION)
       - IMAGE_TAG=${COMMIT_HASH:=latest}
-      - REPOSITORY_URI=634842168668.dkr.ecr.ap-south-1.amazonaws.com/fmh 
+      - REPOSITORY_URI=634842168668.dkr.ecr.$AWS_REGION.amazonaws.com/fmh 
   build:
     commands:
       - echo Build started on `date`
