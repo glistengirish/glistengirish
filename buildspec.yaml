@@ -1,40 +1,39 @@
 version: 0.2
 
-#env:
-  #variables:
-     # key: "value"
-     # key: "value"
-  #parameter-store:
-     # key: "value"
-     # key: "value"
-  #secrets-manager:
-     # key: secret-id:json-key:version-stage:version-id
-     # key: secret-id:json-key:version-stage:version-id
-  #exported-variables:
-     # - variable
-     # - variable
-  #git-credential-helper: yes
+env:
+  variables:
+    AWS_REGION: "ap-south-1"
+    AWS_ACCOUNT_ID: "634842168668"
+    AWS_ECR_REPO_NAME: "fmh"
+    CONTAINER_NAME: "php-fpm"
 
 phases:
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
-      - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 634842168668.dkr.ecr.ap-south-1.amazonaws.com
+      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION)
+      - IMAGE_TAG=${COMMIT_HASH:=php-7.2-fpm}
+      - REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_ECR_REPO_NAME 
   build:
     commands:
       - echo Build started on `date`
       - echo Building the Docker image...          
-      - docker build -t fmh .
-      - docker tag fmh:latest 634842168668.dkr.ecr.ap-south-1.amazonaws.com/fmh:latest
+      - docker build -t $REPOSITORY_URI:latest .
+      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG 
   post_build:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker image...
-      - docker push 634842168668.dkr.ecr.ap-southeast-1.amazonaws.com/fmh:latest
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
       - echo Writing image definitions file...
       - echo deployment started on `date`
-#       - aws ecs update-service --region "ap-southeast-1" --cluster "ClusterName" --service "ecsServiceName" --force-new-deployment
       - echo deployment completed on `date`
-      - printf '[{"name":"%s","imageUri":"%s"}]' fmh 634842168668.dkr.ecr.ap-southeast-1.amazonaws.com/fmh:latest > imagedefinitions.json
+#       - printf '{"ImageURI":"%s"}' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+      - printf '[{"name":"%s","imageUri":"%s"}]' $CONTAINER_NAME $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+      - cat imagedefinitions.json
+
 artifacts:
     files: imagedefinitions.json
+    
+
