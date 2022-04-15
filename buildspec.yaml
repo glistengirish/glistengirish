@@ -1,10 +1,9 @@
 version: 0.2
 
-env:
-  variables:
-      AWS_REGION: "ap-south-1"
-      AWS_ACCOUNT_ID: "634842168668"
-      AWS_ECR_REPO_NAME: "fmh"
+#env:
+  #variables:
+     # key: "value"
+     # key: "value"
   #parameter-store:
      # key: "value"
      # key: "value"
@@ -17,35 +16,25 @@ env:
   #git-credential-helper: yes
 
 phases:
-  install:
-    commands:
-      - wget "https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip"
-      - unzip aws-sam-cli-linux-x86_64.zip -d sam-installation
-      - sudo ./sam-installation/install
-      - echo sam --version
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
-      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
-      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION)
-      - IMAGE_TAG=${COMMIT_HASH:=php-7.2-fpm}
-      - REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_ECR_REPO_NAME 
+      - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 634842168668.dkr.ecr.ap-south-1.amazonaws.com
   build:
     commands:
       - echo Build started on `date`
       - echo Building the Docker image...          
-      - docker build -t $REPOSITORY_URI:latest .
-      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG 
+      - docker build -t fmh .
+      - docker tag fmh:latest 634842168668.dkr.ecr.ap-south-1.amazonaws.com/fmh:latest
   post_build:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker image...
-      - docker push $REPOSITORY_URI:$IMAGE_TAG
+      - docker push 634842168668.dkr.ecr.ap-southeast-1.amazonaws.com/fmh:latest
       - echo Writing image definitions file...
       - echo deployment started on `date`
-#       - aws ecs update-service --region "ap-south-1" --cluster "ClusterName" --service "ecsServiceName" --force-new-deployment
+#       - aws ecs update-service --region "ap-southeast-1" --cluster "ClusterName" --service "ecsServiceName" --force-new-deployment
       - echo deployment completed on `date`
-      - printf '{"ImageURI":"%s"}' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
-      - sam build --use-container --build-image $REPOSITORY_URI:$IMAGE_TAG
+      - printf '[{"name":"%s","imageUri":"%s"}]' fmh 634842168668.dkr.ecr.ap-southeast-1.amazonaws.com/fmh:latest > imagedefinitions.json
 artifacts:
     files: imagedefinitions.json
